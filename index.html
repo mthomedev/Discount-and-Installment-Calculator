@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Calculate discounted prices and simple-interest installment plans instantly."
+    />
+    <title>Discount & Installment Calculator</title>
+    <link rel="shortcut icon" href="/assets/favicon.png" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <main class="container" role="main">
+      <header class="app-header">
+        <span class="badge">Simple Interest</span>
+        <h1>Discount &amp; Installment<br /><em>Calculator</em></h1>
+        <p class="subtitle">
+          Enter the price, discount, interest rate and number of installments to
+          get a full breakdown.
+        </p>
+      </header>
+
+      <form id="form" novalidate aria-label="Calculator inputs">
+        <div class="fields-grid">
+          <div class="campo">
+            <label for="preco">
+              Price
+              <span class="unit">($)</span>
+            </label>
+            <input
+              id="preco"
+              type="number"
+              step="0.01"
+              min="0.01"
+              placeholder="e.g. 1200.00"
+              aria-describedby="preco-hint"
+              required
+            />
+            <span id="preco-hint" class="field-hint"
+              >Original product price before any discount</span
+            >
+          </div>
+
+          <div class="campo">
+            <label for="desconto">
+              Discount
+              <span class="unit">(%)</span>
+            </label>
+            <input
+              id="desconto"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              value="0"
+              placeholder="0"
+              aria-describedby="desconto-hint"
+              required
+            />
+            <span id="desconto-hint" class="field-hint"
+              >Percentage off the original price</span
+            >
+          </div>
+
+          <div class="campo">
+            <label for="taxa">
+              Monthly rate
+              <span class="unit">(%)</span>
+            </label>
+            <input
+              id="taxa"
+              type="number"
+              step="0.01"
+              min="0"
+              value="0"
+              placeholder="e.g. 1.99"
+              aria-describedby="taxa-hint"
+              required
+            />
+            <span id="taxa-hint" class="field-hint"
+              >Simple interest per month (0 = interest-free)</span
+            >
+          </div>
+
+          <div class="campo">
+            <label for="parcelas">
+              Installments
+              <span class="unit">(months)</span>
+            </label>
+            <input
+              id="parcelas"
+              type="number"
+              min="1"
+              max="360"
+              value="1"
+              placeholder="1"
+              aria-describedby="parcelas-hint"
+              required
+            />
+            <span id="parcelas-hint" class="field-hint"
+              >Number of monthly payments</span
+            >
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-calc" aria-label="Calculate results">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <line x1="8" y1="21" x2="16" y2="21" />
+              <line x1="12" y1="17" x2="12" y2="21" />
+            </svg>
+            Calculate
+          </button>
+          <button
+            type="button"
+            id="btn-reset"
+            class="btn-reset"
+            aria-label="Reset form"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+        </div>
+
+        <p id="erro" role="alert" aria-live="polite" class="error-msg"></p>
+      </form>
+
+      <!-- ── Results ── -->
+      <section
+        class="resultados"
+        id="resultados"
+        hidden
+        aria-label="Calculation results"
+      >
+        <h2>Results</h2>
+        <ul class="cards-grid" role="list">
+          <li class="card">
+            <span class="card-label">Price with discount</span>
+            <strong class="card-value" id="precoComDesconto">—</strong>
+          </li>
+          <li class="card card--highlight">
+            <span class="card-label">Installment value</span>
+            <strong class="card-value" id="valorParcela">—</strong>
+          </li>
+          <li class="card">
+            <span class="card-label">Total to pay</span>
+            <strong class="card-value" id="totalPagar">—</strong>
+          </li>
+          <li class="card card--savings">
+            <span class="card-label">Savings from discount</span>
+            <strong class="card-value" id="economia">—</strong>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ── Table ── -->
+      <section id="tabelaSecao" hidden aria-label="Installment table">
+        <h2>Installment Schedule</h2>
+        <div
+          class="table-scroll"
+          role="region"
+          aria-label="Scrollable installment table"
+          tabindex="0"
+        >
+          <table id="tabela">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Installment ($)</th>
+                <th scope="col">Interest ($)</th>
+                <th scope="col">Amortization ($)</th>
+                <th scope="col">Remaining ($)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+            <tfoot id="tfoot"></tfoot>
+          </table>
+        </div>
+        <p class="table-note">
+          * Calculated using the flat (simple) interest method — interest is the
+          same every month.
+        </p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        Built with vanilla HTML, CSS &amp; JS &nbsp;·&nbsp;
+        <a href="https://github.com/" target="_blank" rel="noopener noreferrer"
+          >View on GitHub</a
+        >
+      </p>
+    </footer>
+
+    <script src="./js/script.js"></script>
+  </body>
+</html>
