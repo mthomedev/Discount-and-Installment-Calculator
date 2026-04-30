@@ -17,7 +17,7 @@ A lightweight, accessible web calculator that simulates **flat (simple) interest
 No build tools or package manager required.
 
 ```bash
-git clone https://github.com/mthomedev/discount-installment-calculator.git
+git clone https://github.com/mthomedev/Discount-and-Installment-Calculator
 cd discount-installment-calculator
 # Open index.html in your browser
 open index.html          # macOS
